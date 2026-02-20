@@ -58,18 +58,18 @@ def FormatacaoFirstMile(Dados, Operação, Periodo, IDFatura):
     Rotas[['SVC_Parte','KMs_Range']] = Rotas['SVC_Info'].str.split(' - KMs RANGE:', expand=True, n=1)
     Rotas[['SVC_Parte_1','SVC_Parte_2']] = Rotas['SVC_Parte'].str.split(' - ', expand=True, n=1)
 
-    Rotas = Rotas.drop(columns=['SVC_Info','SVC_Parte','Descrição','Total'])
+    Rotas = Rotas.drop(columns=['SVC_Info','SVC_Parte','Descrição'])
     Rotas = Rotas.rename(columns={
         'Descricao_Base':'Descrição',
         'KMs_Range':'KM',
         'SVC_Parte_1':'Service',
         'SVC_Parte_2':'Obs',
-        'Preço unitário':'Total'
+        'Total':'Valor Rota',
+        'Total com Tax':'Total Final'
     })
 
-    Rotas = Rotas[['IDFatura','ID da rota','Data de início','Data de término',
-                   'Operação','Quinzena','Descrição','Service','Placa',
-                   'Motorista','KM','Total','Ambulance','part of time','holiday']]
+
+    
 
     Rotas['KM'] = Rotas['KM'].replace("None","").fillna("").replace("","0/0")
 
@@ -78,8 +78,14 @@ def FormatacaoFirstMile(Dados, Operação, Periodo, IDFatura):
     for col in ['Data de início','Data de término']:
         Rotas[col] = pd.to_datetime(Rotas[col], format='%d/%m/%Y')
 
-    for col in ['IDFatura','ID da rota','Total']:
+    for col in ['IDFatura','ID da rota','Valor Rota','Total com ISS','Total com ICMS','Total Final']:
         Rotas[col] = pd.to_numeric(Rotas[col], errors='coerce')
+        
+        
+        
+    Rotas = Rotas[['IDFatura','ID da rota','Data de início','Data de término',
+                   'Operação','Quinzena','Descrição','Service','Placa',
+                   'Motorista','KM','Ambulance','part of time','holiday','Ajudante','Valor Rota','Total com ISS','Total com ICMS','Total Final']]
 
     return Rotas, Penalidades, Pedagio
 
@@ -123,8 +129,10 @@ def FormatacaoMeliOne(Dados, Operação, Periodo, IDFatura):
 
     for col in ['IDFatura','ID da rota','Total']:
         Rotas[col] = pd.to_numeric(Rotas[col], errors='coerce')
+        
+        
 
-    return Rotas, Penalidades, pd.DataFrame()
+    return Rotas, Penalidades
 
 
 def formatarLastMile(Dados, Operacao, Periodo, IDFatura):
@@ -135,7 +143,7 @@ def formatarLastMile(Dados, Operacao, Periodo, IDFatura):
     Paradas = Paradas.astype({'Total': float, 'Quantidade': int})
     Paradas = Paradas.rename(columns={
         'Quantidade': 'QTD Paradas',
-        'Total': 'R$ Valor'
+        'Total': 'R$ Paradas'
     })
 
     # ===== PENALIDADES =====
@@ -161,7 +169,7 @@ def formatarLastMile(Dados, Operacao, Periodo, IDFatura):
         for col in ['ID da rota','ID Pacote']:
             Penalidades[col] = pd.to_numeric(Penalidades[col], errors='coerce')
 
-    # ===== ROTAS =====
+    
     Rotas = Dados[Dados['Descrição'].str.contains('SVC', na=False)].copy()
     Rotas = Rotas[~Rotas['Descrição'].str.contains('Helpers', na=False)]
 
@@ -182,12 +190,12 @@ def formatarLastMile(Dados, Operacao, Periodo, IDFatura):
         'Descricao_Base':'Descriçao',
         'KMs_Range':'KM',
         'SVC_Parte_1':'Service',
-        'SVC_Parte_2':'Obs'
+        'SVC_Parte_2':'Obs',
+        'Total':'Valor Rota',
+        'Total com Tax':'Total Final'
     })
 
-    Rotas = Rotas[['IDFatura','ID da rota','Data de início','Data de término',
-                   'Operação','Quinzena','Descriçao','Service','Placa',
-                   'Motorista','KM','Total com Tax','Total com ISS','Total com ICMS','Total','Ambulance','part of time','holiday']]
+    
 
     # ===== AJUSTES =====
     Rotas['KM'] = Rotas['KM'].replace("None","").fillna("")
@@ -204,10 +212,15 @@ def formatarLastMile(Dados, Operacao, Periodo, IDFatura):
     for col in ['IDFatura','ID da rota']:
         Rotas[col] = pd.to_numeric(Rotas[col], errors='coerce')
 
-    for col in ['Total com Tax','Total com ISS','Total com ICMS','Total','QTD Paradas','R$ Valor']:
+    for col in ['Total Final','Total com ISS','Total com ICMS','Valor Rota','QTD Paradas','R$ Paradas']:
         Rotas[col] = pd.to_numeric(Rotas[col], errors='coerce')
+        
+    Rotas = Rotas[['IDFatura','ID da rota','Data de início','Data de término',
+                   'Operação','Quinzena','Descriçao','Service','Placa',
+                   'Motorista','KM','Ambulance','part of time','holiday','QTD Paradas','R$ Paradas','Valor Rota','Total com ISS','Total com ICMS','Total Final']]   
 
-    return Rotas, Penalidades, pd.DataFrame()
+
+    return Rotas, Penalidades
 
 def ConciliarLineHaul(Rotas, Tabela1):
 

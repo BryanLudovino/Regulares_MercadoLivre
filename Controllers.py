@@ -18,24 +18,24 @@ def OutputTable(Tabela, Operacao, Quinzena, IDFatura):
 
     # MELI ONE → Rotas + Penalidades
     elif Operacao == 'MeliOne':
-        Rotas, Penalidades, _ = Métodos.FormatacaoMeliOne(
+        Rotas, Penalidades= Métodos.FormatacaoMeliOne(
             Tabela, Operacao, Quinzena, IDFatura
         )
         Pedagio = pd.DataFrame()
         return Rotas, Penalidades, Pedagio
 
-    # LINE HAUL → Apenas Rotas
+
     elif Operacao == 'Line Haul':
-        Rotas, _, _ = Métodos.FormatacaoLineHaul(
+        Rotas = Métodos.FormatacaoLineHaul(
             Tabela, Operacao, Quinzena, IDFatura
         )
         Penalidades = pd.DataFrame()
         Pedagio = pd.DataFrame()
         return Rotas, Penalidades, Pedagio
 
-    # LAST MILE → Rotas + Penalidades
+
     elif Operacao == 'Last Mile':
-        Rotas, Penalidades, _ = Métodos.formatarLastMile(
+        Rotas, Penalidades = Métodos.formatarLastMile(
             Tabela, Operacao, Quinzena, IDFatura
         )
         Pedagio = pd.DataFrame()

@@ -5,7 +5,7 @@ import re
 
 
 try:
-    df_read = pd.read_csv("C:/Users/bryan.souza/Downloads/Detalhes da pré-fatura #4960323 (1).csv", sep=";")
+    df_read = pd.read_csv("C:/Users/bryan.souza/Downloads/Detalhes da pré-fatura #5093196.csv", sep=";")
     print("Iniciando leitura do arquivo...")
 except:
     print("❌ Falha na leitura do arquivo!")
